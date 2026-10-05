@@ -1,14 +1,24 @@
-import { createApp } from './app.js';
-import { config } from './config.js';
+import { createApp } from './app.ts';
+import { config } from './config.ts';
+import { createDb } from './database/index.ts';
+import { migrateToLatest } from './database/migrate.ts';
+import { seedDatabase } from './database/seed.ts';
 
 async function bootstrap() {
-  const app = await createApp({});
+  const db = createDb(config);
 
-  await app.ready();
+  await migrateToLatest(db);
+  await seedDatabase(db);
+
+  const app = await createApp({ db });
+
+  app.addHook('onClose', async () => {
+    await db.destroy();
+  });
 
   await app.listen({
     port: config.PORT,
-    host: config.HOST,
+    host: '0.0.0.0',
   });
 
   const signals = ['SIGINT', 'SIGTERM'];

@@ -1,15 +1,15 @@
-import { type Kysely, sql } from 'kysely';
+import type { Kysely } from 'kysely';
 
 export async function up(db: Kysely<unknown>) {
   await db.schema
     .createTable('passengers')
-    .addColumn('id', 'uuid', (col) => col.primaryKey().defaultTo(sql`uuidv7()`))
-    .addColumn('booking_id', 'uuid', (col) =>
+    .addColumn('id', 'integer', (col) => col.primaryKey())
+    .addColumn('booking_id', 'integer', (col) =>
       col.notNull().references('bookings.id').onDelete('cascade'),
     )
     .addColumn('first_name', 'text', (col) => col.notNull())
     .addColumn('last_name', 'text', (col) => col.notNull())
-    .addColumn('birth_date', 'date', (col) => col.notNull())
+    .addColumn('birth_date', 'text', (col) => col.notNull())
     .addColumn('document_number', 'text', (col) => col.notNull())
     .execute();
 

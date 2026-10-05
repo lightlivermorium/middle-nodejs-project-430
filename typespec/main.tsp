@@ -10,6 +10,16 @@ model Health {
   status: "ok";
 }
 
+model City {
+  code: string;
+  name: string;
+  country: string;
+}
+
 @route("/health")
 @get
 op health(): Health;
+
+@route("/cities")
+@get
+op listCities(): City[];

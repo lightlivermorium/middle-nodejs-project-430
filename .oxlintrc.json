@@ -17,5 +17,5 @@
         "node": true,
         "es2024": true
     },
-    "ignorePatterns": ["generated/**", "src/generated/**", "dist/**"]
+    "ignorePatterns": ["generated/**", "src/generated/**"]
 }

@@ -1,15 +1,15 @@
-import { type Kysely, sql } from 'kysely';
+import type { Kysely } from 'kysely';
 
 export async function up(db: Kysely<unknown>) {
   await db.schema
     .createTable('flights')
-    .addColumn('id', 'uuid', (col) => col.primaryKey().defaultTo(sql`uuidv7()`))
-    .addColumn('airline_code', 'varchar(2)', (col) => col.notNull().references('airlines.code'))
+    .addColumn('id', 'integer', (col) => col.primaryKey())
+    .addColumn('airline_code', 'text', (col) => col.notNull().references('airlines.code'))
     .addColumn('number', 'text', (col) => col.notNull())
-    .addColumn('from_city_code', 'varchar(3)', (col) => col.notNull().references('cities.code'))
-    .addColumn('to_city_code', 'varchar(3)', (col) => col.notNull().references('cities.code'))
-    .addColumn('departure_at', 'timestamptz', (col) => col.notNull())
-    .addColumn('arrival_at', 'timestamptz', (col) => col.notNull())
+    .addColumn('from_city_code', 'text', (col) => col.notNull().references('cities.code'))
+    .addColumn('to_city_code', 'text', (col) => col.notNull().references('cities.code'))
+    .addColumn('departure_at', 'text', (col) => col.notNull())
+    .addColumn('arrival_at', 'text', (col) => col.notNull())
     .addColumn('duration_minutes', 'integer', (col) => col.notNull())
     .addColumn('price', 'integer', (col) => col.notNull())
     .addColumn('seats_available', 'integer', (col) => col.notNull())

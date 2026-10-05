@@ -31,7 +31,6 @@
     "ignorePatterns": [
         "generated/**",
         "src/generated/**",
-        "dist/**",
         "package-lock.json",
         ".github/workflows/hexlet-check.yml"
     ]

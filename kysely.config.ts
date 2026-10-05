@@ -1,12 +1,10 @@
-import { CamelCasePlugin, PostgresDialect } from 'kysely';
 import { defineConfig } from 'kysely-ctl';
 
-import { config } from './src/config.js';
-import { createPool } from './src/database/index.js';
+import { config } from './src/config.ts';
+import { createDb } from './src/database/index.ts';
 
 export default defineConfig({
-  dialect: new PostgresDialect({ pool: createPool(config) }),
-  plugins: [new CamelCasePlugin()],
+  kysely: createDb(config),
   migrations: {
     migrationFolder: 'src/database/migrations',
   },

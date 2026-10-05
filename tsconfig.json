@@ -1,8 +1,13 @@
 {
-    "extends": "fastify-tsconfig",
     "compilerOptions": {
-        "sourceMap": true,
-        "types": ["node"]
+        "noEmit": true,
+        "allowImportingTsExtensions": true,
+        "erasableSyntaxOnly": true,
+        "verbatimModuleSyntax": true,
+        "module": "nodenext",
+        "target": "esnext",
+        "strict": true,
+        "skipLibCheck": true
     },
-    "include": ["src", "kysely.config.ts"]
+    "include": ["src/**/*.ts", "tests/**/*.ts", "*.ts"]
 }

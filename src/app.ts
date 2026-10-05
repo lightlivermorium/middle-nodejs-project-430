@@ -1,35 +1,65 @@
 import path from 'node:path';
 
+import fastifyStatic from '@fastify/static';
 import fastify, { type FastifyError } from 'fastify';
 import openapiGlue from 'fastify-openapi-glue';
+import type { Kysely } from 'kysely';
 
-import type { RouteHandlers } from './generated/fastify.gen.js';
+import type { Database } from './database/schema.ts';
+import { ApiError, ValidationError, notFound } from './errors.ts';
+import { createRouteHandlers } from './routes/index.ts';
 
+const publicDir = path.resolve(import.meta.dirname, '../public');
 const specification = path.resolve(import.meta.dirname, '../generated/openapi.yaml');
 
-export const createApp = async ({ logger = true }) => {
+const FRAMEWORK_CODES: Record<number, string> = {
+  400: 'validation_error',
+  403: 'forbidden',
+  404: 'not_found',
+  405: 'method_not_allowed',
+  415: 'validation_error',
+};
+
+type AppOptions = {
+  db: Kysely<Database>;
+  logger?: boolean;
+};
+
+export const createApp = async ({ db, logger = true }: AppOptions) => {
   const app = fastify({ logger });
 
-  const serviceHandlers: RouteHandlers = {
-    async health(_request, reply) {
-      return reply.code(200).send({ status: 'ok' });
-    },
-  };
+  app.register(fastifyStatic, { root: publicDir });
+
+  const serviceHandlers = createRouteHandlers(db);
 
   await app.register(openapiGlue, { specification, serviceHandlers });
 
-  app.setNotFoundHandler((_request, reply) =>
-    reply.code(404).send({ error: { code: 'NOT_FOUND', message: 'Not found' } }),
-  );
-
-  app.setErrorHandler<FastifyError>((err, request, reply) => {
-    if (err.validation) {
-      return reply.code(400).send({
-        error: { code: 'VALIDATION_ERROR', message: err.message, details: err.validation },
-      });
+  app.setNotFoundHandler(async (request, reply) => {
+    if (request.url.startsWith('/api/')) {
+      throw notFound('Unknown endpoint');
     }
-    request.log.error(err);
-    return reply.code(500).send({ error: { code: 'INTERNAL', message: 'Internal server error' } });
+
+    return reply.sendFile('index.html');
+  });
+
+  app.setErrorHandler((error: FastifyError, request, reply) => {
+    if (error instanceof ValidationError) {
+      return reply.code(400).send({ code: 'validation_error', message: error.message });
+    }
+
+    if (error instanceof ApiError) {
+      return reply.code(error.status).send({ code: error.code, message: error.message });
+    }
+
+    const status = error.statusCode ?? 500;
+    if (status >= 400 && status < 500) {
+      return reply
+        .code(status)
+        .send({ code: FRAMEWORK_CODES[status] ?? 'error', message: error.message });
+    }
+
+    request.log.error(error);
+    return reply.code(500).send({ code: 'internal_error', message: 'Внутренняя ошибка сервера' });
   });
 
   return app;

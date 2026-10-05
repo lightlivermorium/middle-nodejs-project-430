@@ -1,9 +1,9 @@
-import { type Kysely } from 'kysely';
+import type { Kysely } from 'kysely';
 
 export async function up(db: Kysely<unknown>) {
   await db.schema
     .createTable('airlines')
-    .addColumn('code', 'varchar(2)', (col) => col.primaryKey())
+    .addColumn('code', 'text', (col) => col.primaryKey())
     .addColumn('name', 'text', (col) => col.notNull())
     .execute();
 }
