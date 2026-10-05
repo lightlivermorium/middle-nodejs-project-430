@@ -1,13 +1,9 @@
-import { randomInt } from 'node:crypto';
-
 import type { FastifyInstance } from 'fastify';
-import type { Insertable } from 'kysely';
 import { afterAll, beforeAll, describe, expect, inject, it } from 'vitest';
 
 import { createApp } from '../src/app.ts';
 import { createDb } from '../src/database/index.ts';
-import type { FlightsTable } from '../src/database/schema.ts';
-import { DAY_MS, toUtcDateString } from '../src/dates.ts';
+import { createFlight, daysFromToday } from './helpers.ts';
 
 const db = createDb(inject('databaseUrl'));
 let app: FastifyInstance;
@@ -21,28 +17,6 @@ afterAll(async () => {
   await db.destroy();
 });
 
-const daysFromToday = (days: number) => toUtcDateString(new Date(Date.now() + days * DAY_MS));
-
-const createFlight = (overrides: Partial<Insertable<FlightsTable>> = {}) => {
-  const departureAt = new Date(`${daysFromToday(40)}T10:00:00Z`);
-  return db
-    .insertInto('flights')
-    .values({
-      airlineCode: 'SU',
-      number: `SU${randomInt(10_000, 100_000)}`,
-      fromCityCode: 'KZN',
-      toCityCode: 'KGD',
-      departureAt,
-      arrivalAt: new Date(departureAt.getTime() + 150 * 60 * 1000),
-      durationMinutes: 150,
-      price: 5400,
-      seatsAvailable: 20,
-      ...overrides,
-    })
-    .returning(['id', 'number'])
-    .executeTakeFirstOrThrow();
-};
-
 const search = (query: string) => app.inject({ method: 'GET', url: `/api/flights?${query}` });
 
 const flightIds = (response: { json: () => { id: string }[] }) =>
@@ -51,7 +25,7 @@ const flightIds = (response: { json: () => { id: string }[] }) =>
 describe('GET /api/flights', () => {
   it('finds flights by route and date in the contract format', async () => {
     const date = daysFromToday(40);
-    const flight = await createFlight();
+    const flight = await createFlight(db);
 
     const response = await search(`origin=KZN&destination=KGD&date=${date}`);
 
@@ -72,11 +46,11 @@ describe('GET /api/flights', () => {
 
   it('matches the departure day in UTC', async () => {
     const date = daysFromToday(41);
-    const early = await createFlight({
+    const early = await createFlight(db, {
       departureAt: `${date}T00:30:00Z`,
       arrivalAt: `${date}T03:00:00Z`,
     });
-    const previousDay = await createFlight({
+    const previousDay = await createFlight(db, {
       departureAt: `${daysFromToday(40)}T23:30:00Z`,
       arrivalAt: `${date}T02:00:00Z`,
     });
@@ -90,7 +64,7 @@ describe('GET /api/flights', () => {
 
   it('skips flights without enough free seats', async () => {
     const date = daysFromToday(40);
-    const flight = await createFlight({ seatsAvailable: 2 });
+    const flight = await createFlight(db, { seatsAvailable: 2 });
 
     const enough = await search(`origin=KZN&destination=KGD&date=${date}&passengers=2`);
     const notEnough = await search(`origin=KZN&destination=KGD&date=${date}&passengers=3`);
@@ -128,7 +102,7 @@ describe('GET /api/flights', () => {
 describe('GET /api/flights/{id}', () => {
   it('returns the same flight as the search', async () => {
     const date = daysFromToday(40);
-    const flight = await createFlight();
+    const flight = await createFlight(db);
     const found = (await search(`origin=KZN&destination=KGD&date=${date}`))
       .json()
       .find((f: { id: string }) => f.id === flight.id);

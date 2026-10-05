@@ -1,9 +1,5 @@
-import type { Selectable } from 'kysely';
-
-import type { FlightsTable } from '../database/schema.ts';
-import type { Flight } from '../generated/index.ts';
-
-type FlightRow = Selectable<FlightsTable> & Pick<Flight, 'airline' | 'origin' | 'destination'>;
+import type { Flight } from '../../generated/index.ts';
+import type { FlightRow } from './types.ts';
 
 const make = (flight: FlightRow): Flight => ({
   id: flight.id,

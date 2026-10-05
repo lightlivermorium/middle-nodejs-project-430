@@ -7,7 +7,7 @@ import type { Kysely } from 'kysely';
 
 import type { Database } from './database/schema.ts';
 import { ApiError, ValidationError, notFound } from './errors.ts';
-import { createRouteHandlers } from './routes/index.ts';
+import { createRouteHandlers } from './modules/index.ts';
 
 const publicDir = path.resolve(import.meta.dirname, '../public');
 const specification = path.resolve(import.meta.dirname, '../contract/openapi.yaml');

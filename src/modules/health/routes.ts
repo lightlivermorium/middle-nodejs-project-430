@@ -1,4 +1,4 @@
-import type { RouteHandlers } from '../generated/fastify.gen.ts';
+import type { RouteHandlers } from '../../generated/fastify.gen.ts';
 
 export const healthHandlers: Pick<RouteHandlers, 'health'> = {
   async health(_request, reply) {
