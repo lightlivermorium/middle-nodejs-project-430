@@ -13,15 +13,22 @@
 
 ## Стек
 
-- JavaScript
+- TypeScript
+- Fastify
+- Kysely
 
 ## Установка
-
-<!-- Опишите установку: клонирование, зависимости, переменные окружения -->
 
 ```bash
 git clone https://github.com/lightlivermorium/middle-nodejs-project-430.git
 cd middle-nodejs-project-430
+cp .env.example .env
+nvm use
+npm install
+docker compose up -d
+npx kysely migrate:latest
+npx kysely seed:run
+npm run dev
 ```
 
 ## Использование

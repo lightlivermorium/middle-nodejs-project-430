@@ -1,0 +1,42 @@
+{
+    "name": "middle-nodejs-project-430",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "generate": "tsp compile typespec && openapi-ts",
+        "start": "node dist/server.js",
+        "predev": "npm run generate",
+        "dev": "tsx watch --env-file-if-exists=.env src/server.ts",
+        "prebuild": "npm run generate",
+        "build": "tsc -p tsconfig.build.json",
+        "pretypecheck": "npm run generate",
+        "typecheck": "tsc --noEmit",
+        "lint": "oxlint",
+        "format": "oxfmt"
+    },
+    "dependencies": {
+        "fastify": "^5.12.5",
+        "fastify-openapi-glue": "^4.11.5",
+        "kysely": "^0.29.6",
+        "pg": "^8.23.1",
+        "tsx": "^4.23.15",
+        "zod": "^4.6.5"
+    },
+    "devDependencies": {
+        "@hey-api/openapi-ts": "^0.99.0",
+        "@types/node": "^26.6.4",
+        "@types/pg": "^8.23.1",
+        "@typespec/compiler": "^1.16.0",
+        "@typespec/http": "^1.16.0",
+        "@typespec/openapi3": "^1.16.0",
+        "fastify-tsconfig": "^3.0.0",
+        "kysely-ctl": "^0.21.0",
+        "oxfmt": "^0.71.0",
+        "oxlint": "^1.86.0",
+        "typescript": "^6.0.3"
+    },
+    "engines": {
+        "node": ">=26"
+    }
+}

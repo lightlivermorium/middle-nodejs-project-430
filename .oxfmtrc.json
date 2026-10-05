@@ -1,0 +1,38 @@
+{
+    "$schema": "./node_modules/oxfmt/configuration_schema.json",
+    "semi": true,
+    "printWidth": 100,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "all",
+    "sortImports": true,
+    "overrides": [
+        {
+            "files": ["*.json"],
+            "options": {
+                "tabWidth": 4,
+                "trailingComma": "none"
+            }
+        },
+        {
+            "files": ["*.yml"],
+            "options": {
+                "tabWidth": 4,
+                "singleQuote": false
+            }
+        },
+        {
+            "files": ["*.md"],
+            "options": {
+                "singleQuote": false
+            }
+        }
+    ],
+    "ignorePatterns": [
+        "generated/**",
+        "src/generated/**",
+        "dist/**",
+        "package-lock.json",
+        ".github/workflows/hexlet-check.yml"
+    ]
+}

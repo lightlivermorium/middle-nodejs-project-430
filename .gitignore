@@ -1,0 +1,7 @@
+.idea
+node_modules/
+.env
+.DS_Store
+generated/
+src/generated/
+dist/
