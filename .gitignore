@@ -3,5 +3,4 @@ node_modules/
 .env
 .DS_Store
 src/generated/
-database.sqlite*
 public/

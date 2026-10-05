@@ -11,21 +11,23 @@
         "pretypecheck": "npm run generate",
         "typecheck": "tsc",
         "lint": "oxlint",
-        "format": "oxfmt"
+        "format": "oxfmt",
+        "test": "vitest run"
     },
     "dependencies": {
         "@fastify/static": "^10.1.5",
         "@hexlet/js-flight-booking-frontend": "^1.0.1",
-        "better-sqlite3": "^13.0.3",
         "fastify": "^5.12.5",
         "fastify-openapi-glue": "^4.11.5",
         "kysely": "^0.29.6",
+        "pg": "^8.23.1",
         "zod": "^4.6.5"
     },
     "devDependencies": {
         "@hey-api/openapi-ts": "^0.99.0",
-        "@types/better-sqlite3": "^9.6.0",
+        "@testcontainers/postgresql": "^12.2.0",
         "@types/node": "^26.6.4",
+        "@types/pg": "^8.23.1",
         "@typespec/compiler": "^1.16.0",
         "@typespec/http": "^1.16.0",
         "@typespec/openapi": "^1.16.0",
@@ -33,12 +35,16 @@
         "kysely-ctl": "^0.21.0",
         "oxfmt": "^0.71.0",
         "oxlint": "^1.86.0",
-        "typescript": "^6.0.3"
+        "typescript": "^6.0.3",
+        "vitest": "^5.0.3"
     },
     "engines": {
         "node": ">=26"
     },
     "allowScripts": {
-        "better-sqlite3": false
+        "cpu-features": false,
+        "fsevents": false,
+        "protobufjs": false,
+        "ssh2": false
     }
 }

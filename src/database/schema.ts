@@ -1,11 +1,14 @@
 import type { ColumnType, Generated } from 'kysely';
 
+type Timestamp = ColumnType<Date, Date | string, Date | string>;
+
 export type BookingStatus = 'confirmed' | 'cancelled';
 
 export interface CitiesTable {
   code: string;
   name: string;
   country: string;
+  sortOrder: number;
 }
 
 export interface AirlinesTable {
@@ -19,8 +22,8 @@ export interface FlightsTable {
   number: string;
   fromCityCode: string;
   toCityCode: string;
-  departureAt: string;
-  arrivalAt: string;
+  departureAt: Timestamp;
+  arrivalAt: Timestamp;
   durationMinutes: number;
   price: number;
   seatsAvailable: number;
@@ -34,7 +37,7 @@ export interface BookingsTable {
   totalPrice: number;
   contactEmail: string;
   contactPhone: string;
-  createdAt: ColumnType<string, never, never>;
+  createdAt: ColumnType<Date, never, never>;
 }
 
 export interface PassengersTable {

@@ -1,6 +1,7 @@
 # Бекенд для бронирования авиабилетов (Node.js)
 
 [![hexlet-check](https://github.com/lightlivermorium/middle-nodejs-project-430/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/lightlivermorium/middle-nodejs-project-430/actions)
+[![ci](https://github.com/lightlivermorium/middle-nodejs-project-430/actions/workflows/ci.yml/badge.svg)](https://github.com/lightlivermorium/middle-nodejs-project-430/actions/workflows/ci.yml)
 
 Реализуйте бекенд сервиса бронирования авиабилетов: справочник городов, поиск рейсов,
 оформление, просмотр и отмену брони. Код на TypeScript, данные храните в PostgreSQL,
@@ -22,18 +23,25 @@
 ```bash
 git clone https://github.com/lightlivermorium/middle-nodejs-project-430.git
 cd middle-nodejs-project-430
-cp .env.example .env
 nvm use
-npm install
 docker compose up -d
-npx kysely migrate:latest
-npx kysely seed:run
-npm run dev
+make install
+make build
+make start
+```
+
+Проверки:
+
+```bash
+make lint
+make test
 ```
 
 ## Использование
 
-<!-- Добавьте примеры запуска и запись asciinema — именно это смотрит работодатель -->
+```bash
+make start
+```
 
 ---
 

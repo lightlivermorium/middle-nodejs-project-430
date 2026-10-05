@@ -3,13 +3,13 @@ import type { Kysely } from 'kysely';
 export async function up(db: Kysely<unknown>) {
   await db.schema
     .createTable('passengers')
-    .addColumn('id', 'integer', (col) => col.primaryKey())
+    .addColumn('id', 'integer', (col) => col.primaryKey().generatedAlwaysAsIdentity())
     .addColumn('booking_id', 'integer', (col) =>
       col.notNull().references('bookings.id').onDelete('cascade'),
     )
     .addColumn('first_name', 'text', (col) => col.notNull())
     .addColumn('last_name', 'text', (col) => col.notNull())
-    .addColumn('birth_date', 'text', (col) => col.notNull())
+    .addColumn('birth_date', 'date', (col) => col.notNull())
     .addColumn('document_number', 'text', (col) => col.notNull())
     .execute();
 

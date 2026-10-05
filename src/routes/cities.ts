@@ -8,7 +8,7 @@ export const createCitiesHandlers = (db: Kysely<Database>): Pick<RouteHandlers, 
     const cities = await db
       .selectFrom('cities')
       .select(['code', 'name', 'country'])
-      .orderBy('name')
+      .orderBy('sortOrder')
       .execute();
 
     return reply.code(200).send(cities);

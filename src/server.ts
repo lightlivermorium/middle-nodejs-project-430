@@ -5,7 +5,7 @@ import { migrateToLatest } from './database/migrate.ts';
 import { seedDatabase } from './database/seed.ts';
 
 async function bootstrap() {
-  const db = createDb(config);
+  const db = createDb(config.DATABASE_URL);
 
   await migrateToLatest(db);
   await seedDatabase(db);

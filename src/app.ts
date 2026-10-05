@@ -58,9 +58,10 @@ export const createApp = async ({ db, logger = true }: AppOptions) => {
     return reply.code(500).send({ code: 'internal_error', message: 'Внутренняя ошибка сервера' });
   });
 
-  const serviceHandlers = createRouteHandlers(db);
-
-  await app.register(openapiGlue, { specification, serviceHandlers });
+  await app.register(openapiGlue, {
+    specification,
+    serviceHandlers: createRouteHandlers(db),
+  });
 
   return app;
 };

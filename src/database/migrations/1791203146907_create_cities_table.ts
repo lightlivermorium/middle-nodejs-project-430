@@ -6,6 +6,7 @@ export async function up(db: Kysely<unknown>) {
     .addColumn('code', 'text', (col) => col.primaryKey())
     .addColumn('name', 'text', (col) => col.notNull())
     .addColumn('country', 'text', (col) => col.notNull())
+    .addColumn('sort_order', 'integer', (col) => col.notNull())
     .execute();
 }
 
