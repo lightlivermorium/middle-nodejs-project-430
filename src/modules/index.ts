@@ -7,7 +7,7 @@ import { createCitiesHandlers } from './cities/routes.ts';
 import { createFlightsHandlers } from './flights/routes.ts';
 import { healthHandlers } from './health/routes.ts';
 
-export const createRouteHandlers = (db: Kysely<Database>): Partial<RouteHandlers> => ({
+export const createRouteHandlers = (db: Kysely<Database>): RouteHandlers => ({
   ...healthHandlers,
   ...createCitiesHandlers(db),
   ...createFlightsHandlers(db),

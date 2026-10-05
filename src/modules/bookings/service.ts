@@ -4,7 +4,7 @@ import type { Database } from '../../database/schema.ts';
 import { ValidationError } from '../../errors.ts';
 import type { CreateBookingRequest } from '../../generated/index.ts';
 import { generateCode } from '../../lib/code.ts';
-import { findFlight } from '../flights/service.ts';
+import { findFlight, getFlight } from '../flights/service.ts';
 import { isCodeCollision } from './helpers.ts';
 
 export const createBooking = async (
@@ -54,4 +54,81 @@ export const createBooking = async (
     }
     return insertBooking();
   }
+};
+
+export const findBooking = async (db: Kysely<Database>, code: string, lastName?: string) => {
+  if (!lastName) {
+    return undefined;
+  }
+
+  const booking = await db
+    .selectFrom('bookings')
+    .innerJoin('passengers', 'passengers.bookingId', 'bookings.id')
+    .selectAll('bookings')
+    .where('bookings.code', '=', code.trim().toUpperCase())
+    .where((eb) =>
+      eb(
+        eb.fn('lower', [eb.fn('trim', ['passengers.lastName'])]),
+        '=',
+        eb.fn('lower', [eb.val(lastName.trim())]),
+      ),
+    )
+    .executeTakeFirst();
+
+  if (!booking) {
+    return undefined;
+  }
+
+  const flight = await getFlight(db, booking.flightId);
+
+  const passengers = await db
+    .selectFrom('passengers')
+    .selectAll()
+    .where('bookingId', '=', booking.id)
+    .orderBy('id')
+    .execute();
+
+  return { ...booking, flight, passengers };
+};
+
+export const cancelBooking = async (db: Kysely<Database>, code: string, lastName?: string) => {
+  if (!lastName) {
+    return undefined;
+  }
+
+  const found = await db
+    .selectFrom('bookings')
+    .innerJoin('passengers', 'passengers.bookingId', 'bookings.id')
+    .select('bookings.id')
+    .where('bookings.code', '=', code.trim().toUpperCase())
+    .where((eb) =>
+      eb(
+        eb.fn('lower', [eb.fn('trim', ['passengers.lastName'])]),
+        '=',
+        eb.fn('lower', [eb.val(lastName.trim())]),
+      ),
+    )
+    .executeTakeFirst();
+
+  if (!found) {
+    return undefined;
+  }
+
+  const booking = await db
+    .updateTable('bookings')
+    .set({ status: 'cancelled' })
+    .where('id', '=', found.id)
+    .returningAll()
+    .executeTakeFirstOrThrow();
+
+  const flight = await getFlight(db, booking.flightId);
+
+  const passengers = await db
+    .selectFrom('passengers')
+    .selectAll()
+    .where('bookingId', '=', booking.id)
+    .orderBy('id')
+    .execute();
+
+  return { ...booking, flight, passengers };
 };

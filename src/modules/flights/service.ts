@@ -50,3 +50,6 @@ export const searchFlights = (
 
 export const findFlight = async (db: Kysely<Database>, id: string) =>
   isFlightId(id) ? selectFlights(db).where('id', '=', id).executeTakeFirst() : undefined;
+
+export const getFlight = (db: Kysely<Database>, id: string) =>
+  selectFlights(db).where('id', '=', id).executeTakeFirstOrThrow();

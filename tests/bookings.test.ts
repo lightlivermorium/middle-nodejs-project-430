@@ -109,3 +109,100 @@ describe('POST /api/bookings', () => {
     });
   });
 });
+
+const bookFlight = async (passengers = [ivan]) => {
+  const flight = await createFlight(db);
+  const response = await createBooking({ flightId: flight.id, contact, passengers });
+  return response.json();
+};
+
+const getBooking = (code: string, query = '') =>
+  app.inject({ method: 'GET', url: `/api/bookings/${code}${query}` });
+
+const cancelBooking = (code: string, payload?: object) =>
+  app.inject({ method: 'POST', url: `/api/bookings/${code}/cancel`, payload });
+
+describe('GET /api/bookings/{code}', () => {
+  it('finds the booking by code and last name', async () => {
+    const booking = await bookFlight();
+
+    const response = await getBooking(booking.code, '?lastName=Петров');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual(booking);
+  });
+
+  it('ignores case and outer spaces in the last name and the code', async () => {
+    const booking = await bookFlight();
+
+    const response = await getBooking(
+      booking.code.toLowerCase(),
+      `?lastName=${encodeURIComponent('  пЕТРОВ ')}`,
+    );
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json().code).toBe(booking.code);
+  });
+
+  it('accepts the last name of any passenger', async () => {
+    const booking = await bookFlight([ivan, maria]);
+
+    const response = await getBooking(booking.code, '?lastName=Петрова');
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('responds with the same 404 on wrong code, wrong last name and missing last name', async () => {
+    const booking = await bookFlight();
+
+    const responses = await Promise.all([
+      getBooking('ZZZZZZ', '?lastName=Петров'),
+      getBooking(booking.code, '?lastName=Сидоров'),
+      getBooking(booking.code),
+    ]);
+
+    for (const response of responses) {
+      expect(response.statusCode).toBe(404);
+      expect(response.json()).toEqual(responses[0].json());
+    }
+    expect(responses[0].json()).toMatchObject({ code: 'not_found' });
+  });
+});
+
+describe('POST /api/bookings/{code}/cancel', () => {
+  it('cancels the booking and returns it', async () => {
+    const booking = await bookFlight();
+
+    const response = await cancelBooking(booking.code, { lastName: 'петров' });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ ...booking, status: 'cancelled' });
+    const found = await getBooking(booking.code, '?lastName=Петров');
+    expect(found.json().status).toBe('cancelled');
+  });
+
+  it('allows cancelling twice', async () => {
+    const booking = await bookFlight();
+
+    await cancelBooking(booking.code, { lastName: 'Петров' });
+    const response = await cancelBooking(booking.code, { lastName: 'Петров' });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json().status).toBe('cancelled');
+  });
+
+  it.each([
+    ['wrong last name', { lastName: 'Сидоров' }],
+    ['missing last name', {}],
+    ['no body', undefined],
+  ])('responds 404 on %s', async (_, payload) => {
+    const booking = await bookFlight();
+
+    const response = await cancelBooking(booking.code, payload);
+
+    expect(response.statusCode).toBe(404);
+    expect(response.json()).toMatchObject({ code: 'not_found' });
+    const found = await getBooking(booking.code, '?lastName=Петров');
+    expect(found.json().status).toBe('confirmed');
+  });
+});
