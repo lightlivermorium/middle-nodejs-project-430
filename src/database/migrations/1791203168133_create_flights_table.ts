@@ -1,9 +1,9 @@
-import type { Kysely } from 'kysely';
+import { type Kysely, sql } from 'kysely';
 
 export async function up(db: Kysely<unknown>) {
   await db.schema
     .createTable('flights')
-    .addColumn('id', 'integer', (col) => col.primaryKey().generatedAlwaysAsIdentity())
+    .addColumn('id', 'uuid', (col) => col.primaryKey().defaultTo(sql`uuidv7()`))
     .addColumn('airline_code', 'text', (col) => col.notNull().references('airlines.code'))
     .addColumn('number', 'text', (col) => col.notNull())
     .addColumn('from_city_code', 'text', (col) => col.notNull().references('cities.code'))

@@ -4,7 +4,7 @@ export async function up(db: Kysely<unknown>) {
   await db.schema
     .createTable('passengers')
     .addColumn('id', 'integer', (col) => col.primaryKey().generatedAlwaysAsIdentity())
-    .addColumn('booking_id', 'integer', (col) =>
+    .addColumn('booking_id', 'uuid', (col) =>
       col.notNull().references('bookings.id').onDelete('cascade'),
     )
     .addColumn('first_name', 'text', (col) => col.notNull())

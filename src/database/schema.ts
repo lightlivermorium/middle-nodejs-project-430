@@ -17,7 +17,7 @@ export interface AirlinesTable {
 }
 
 export interface FlightsTable {
-  id: Generated<number>;
+  id: Generated<string>;
   airlineCode: string;
   number: string;
   fromCityCode: string;
@@ -30,9 +30,9 @@ export interface FlightsTable {
 }
 
 export interface BookingsTable {
-  id: Generated<number>;
+  id: Generated<string>;
   code: string;
-  flightId: number;
+  flightId: string;
   status: ColumnType<BookingStatus, never, BookingStatus>;
   totalPrice: number;
   contactEmail: string;
@@ -42,7 +42,7 @@ export interface BookingsTable {
 
 export interface PassengersTable {
   id: Generated<number>;
-  bookingId: number;
+  bookingId: string;
   firstName: string;
   lastName: string;
   birthDate: string;
