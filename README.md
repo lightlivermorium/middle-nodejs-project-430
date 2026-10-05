@@ -3,6 +3,8 @@
 [![hexlet-check](https://github.com/lightlivermorium/middle-nodejs-project-430/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/lightlivermorium/middle-nodejs-project-430/actions)
 [![ci](https://github.com/lightlivermorium/middle-nodejs-project-430/actions/workflows/ci.yml/badge.svg)](https://github.com/lightlivermorium/middle-nodejs-project-430/actions/workflows/ci.yml)
 
+Демонстрация: https://middle-nodejs-project-430.onrender.com/
+
 Реализуйте бекенд сервиса бронирования авиабилетов: справочник городов, поиск рейсов,
 оформление, просмотр и отмену брони. Код на TypeScript, данные храните в PostgreSQL,
 фреймворк выбираете сами.
