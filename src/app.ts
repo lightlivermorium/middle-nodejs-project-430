@@ -10,7 +10,7 @@ import { ApiError, ValidationError, notFound } from './errors.ts';
 import { createRouteHandlers } from './routes/index.ts';
 
 const publicDir = path.resolve(import.meta.dirname, '../public');
-const specification = path.resolve(import.meta.dirname, '../generated/openapi.yaml');
+const specification = path.resolve(import.meta.dirname, '../contract/openapi.yaml');
 
 const FRAMEWORK_CODES: Record<number, string> = {
   400: 'validation_error',
@@ -29,10 +29,6 @@ export const createApp = async ({ db, logger = true }: AppOptions) => {
   const app = fastify({ logger });
 
   app.register(fastifyStatic, { root: publicDir });
-
-  const serviceHandlers = createRouteHandlers(db);
-
-  await app.register(openapiGlue, { specification, serviceHandlers });
 
   app.setNotFoundHandler(async (request, reply) => {
     if (request.url.startsWith('/api/')) {
@@ -61,6 +57,10 @@ export const createApp = async ({ db, logger = true }: AppOptions) => {
     request.log.error(error);
     return reply.code(500).send({ code: 'internal_error', message: 'Внутренняя ошибка сервера' });
   });
+
+  const serviceHandlers = createRouteHandlers(db);
+
+  await app.register(openapiGlue, { specification, serviceHandlers });
 
   return app;
 };

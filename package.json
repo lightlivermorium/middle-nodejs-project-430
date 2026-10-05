@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "generate": "tsp compile typespec && openapi-ts",
+        "generate": "tsp compile contract && openapi-ts",
         "start": "node --env-file-if-exists=.env src/server.ts",
         "predev": "npm run generate",
         "dev": "node --watch --env-file-if-exists=.env src/server.ts",
@@ -28,6 +28,7 @@
         "@types/node": "^26.6.4",
         "@typespec/compiler": "^1.16.0",
         "@typespec/http": "^1.16.0",
+        "@typespec/openapi": "^1.16.0",
         "@typespec/openapi3": "^1.16.0",
         "kysely-ctl": "^0.21.0",
         "oxfmt": "^0.71.0",

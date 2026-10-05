@@ -5,7 +5,7 @@ import type { RouteHandlers } from '../generated/fastify.gen.ts';
 import { createCitiesHandlers } from './cities.ts';
 import { healthHandlers } from './health.ts';
 
-export const createRouteHandlers = (db: Kysely<Database>): RouteHandlers => ({
+export const createRouteHandlers = (db: Kysely<Database>): Partial<RouteHandlers> => ({
   ...healthHandlers,
   ...createCitiesHandlers(db),
 });

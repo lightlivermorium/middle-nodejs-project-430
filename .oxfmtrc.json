@@ -29,9 +29,9 @@
         }
     ],
     "ignorePatterns": [
-        "generated/**",
         "src/generated/**",
         "package-lock.json",
-        ".github/workflows/hexlet-check.yml"
+        ".github/workflows/hexlet-check.yml",
+        "contract/openapi.yaml"
     ]
 }
