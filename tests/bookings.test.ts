@@ -88,6 +88,13 @@ describe('POST /api/bookings', () => {
     expect(first.json().code).not.toBe(second.json().code);
   });
 
+  it('responds 400 without a body', async () => {
+    const response = await app.inject({ method: 'POST', url: '/api/bookings' });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json()).toMatchObject({ code: 'validation_error' });
+  });
+
   it.each([
     ['empty passengers', { passengers: [] }],
     ['unknown flight', { flightId: '00000000-0000-7000-8000-000000000000' }],
